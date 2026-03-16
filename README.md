@@ -1,5 +1,6 @@
 # 🎮 Server Minecraft - Tilin Server
 
+[![CI](https://github.com/ItsJesitoVro/Server-minecraft/actions/workflows/ci.yml/badge.svg)](https://github.com/ItsJesitoVro/Server-minecraft/actions/workflows/ci.yml)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
 [![Minecraft](https://img.shields.io/badge/Minecraft-Paper-62B47A?logo=modrinth&logoColor=white)](https://papermc.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)

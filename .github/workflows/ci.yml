@@ -1,0 +1,81 @@
+name: CI - Validate Minecraft Server
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  validate-compose:
+    name: Validate Docker Compose
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate docker-compose syntax
+        run: docker compose config --quiet
+
+  health-check:
+    name: Server Health Check
+    runs-on: ubuntu-latest
+    needs: validate-compose
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start Minecraft server
+        run: docker compose up -d
+
+      - name: Wait for server to be healthy
+        timeout-minutes: 5
+        run: |
+          echo "⏳ Waiting for Minecraft server to pass health check..."
+          echo ""
+
+          attempt=0
+          max_attempts=30
+
+          while [ $attempt -lt $max_attempts ]; do
+            attempt=$((attempt + 1))
+            status=$(docker inspect --format='{{.State.Health.Status}}' minecraft-server 2>/dev/null || echo "not_found")
+
+            echo "  Attempt $attempt/$max_attempts — Status: $status"
+
+            if [ "$status" = "healthy" ]; then
+              echo ""
+              echo "✅ Server is healthy!"
+              docker compose logs --tail=5 minecraft
+              exit 0
+            fi
+
+            if [ "$status" = "unhealthy" ]; then
+              echo ""
+              echo "❌ Server is unhealthy!"
+              docker compose logs minecraft
+              exit 1
+            fi
+
+            sleep 10
+          done
+
+          echo ""
+          echo "❌ Timed out waiting for server to become healthy."
+          docker compose logs minecraft
+          exit 1
+
+      - name: Print server info
+        if: success()
+        run: |
+          echo "📊 Container status:"
+          docker compose ps
+          echo ""
+          echo "📊 Resource usage:"
+          docker stats --no-stream minecraft-server
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v --timeout 30
