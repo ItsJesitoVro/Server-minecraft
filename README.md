@@ -2,10 +2,11 @@
 
 [![CI](https://github.com/ItsJesitoVro/Server-minecraft/actions/workflows/ci.yml/badge.svg)](https://github.com/ItsJesitoVro/Server-minecraft/actions/workflows/ci.yml)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
-[![Minecraft](https://img.shields.io/badge/Minecraft-Paper-62B47A?logo=modrinth&logoColor=white)](https://papermc.io/)
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.4-62B47A?logo=modrinth&logoColor=white)](https://www.minecraft.net/)
+[![Paper](https://img.shields.io/badge/Paper-Server-EEE?logo=paperlessngx&logoColor=black)](https://papermc.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Servidor de Minecraft dockerizado usando [itzg/minecraft-server](https://github.com/itzg/docker-minecraft-server), configurado con **Paper** para máximo rendimiento.
+Servidor de Minecraft dockerizado usando [itzg/minecraft-server](https://github.com/itzg/docker-minecraft-server), configurado con **Paper** y plugins preinstalados. Los jugadores se conectan con un **Minecraft vanilla** — no necesitan instalar nada extra.
 
 ---
 
@@ -13,9 +14,10 @@ Servidor de Minecraft dockerizado usando [itzg/minecraft-server](https://github.
 
 - [Requisitos](#-requisitos)
 - [Inicio rápido](#-inicio-rápido)
-- [Configuración](#%EF%B8%8F-configuración)
+- [Plugins incluidos](#-plugins-incluidos)
+- [Configuración del servidor](#%EF%B8%8F-configuración-del-servidor)
 - [Comandos útiles](#-comandos-útiles)
-- [Arquitectura](#-arquitectura)
+- [Arquitectura del proyecto](#-arquitectura-del-proyecto)
 - [Mantenimiento](#-mantenimiento)
 - [Contribuir](#-contribuir)
 
@@ -23,12 +25,22 @@ Servidor de Minecraft dockerizado usando [itzg/minecraft-server](https://github.
 
 ## 📦 Requisitos
 
+### Para el administrador del servidor
+
 | Herramienta | Versión mínima |
 |-------------|----------------|
 | [Docker](https://docs.docker.com/get-docker/) | 20.10+ |
 | [Docker Compose](https://docs.docker.com/compose/install/) | 2.0+ |
 
 > **Nota:** El servidor necesita al menos **3 GB de RAM** disponible en el host.
+
+### Para los jugadores
+
+| Requisito | Detalle |
+|-----------|---------|
+| Minecraft | **Java Edition 1.21.4** |
+| Mods/Plugins | **Ninguno** — los plugins son 100% server-side |
+| Cuenta premium | **No requerida** (ONLINE_MODE: false) |
 
 ---
 
@@ -46,32 +58,62 @@ docker compose up -d
 docker compose logs -f minecraft
 ```
 
-Una vez que veas `Done! For help, type "help"` en los logs, el servidor está listo.
+El servidor descargará automáticamente **Paper** y los **plugins** en el primer arranque. Espera a ver `Done! For help, type "help"` en los logs.
 
 ### Conectarse al servidor
 
-Abre Minecraft y conéctate a:
+Abre Minecraft **1.21.4** (vanilla) y conéctate a:
 
 ```
-localhost:25565
+<IP-del-host>:25565
 ```
 
-> Si te conectas desde otra máquina en la misma red, usa la IP del host en lugar de `localhost`.
+> 🟢 No necesitas instalar mods, loaders ni nada extra. Los plugins corren en el servidor.
 
 ---
 
-## ⚙️ Configuración
+## 🔌 Plugins incluidos
 
-La configuración del servidor se maneja a través de variables de entorno en `docker-compose.yml`:
+Los plugins se descargan automáticamente al iniciar el servidor.
+
+| Plugin | Fuente | Descripción |
+|--------|--------|-------------|
+| **EssentialsX** | [Modrinth](https://modrinth.com/plugin/essentialsx) | Comandos esenciales: `/home`, `/tpa`, `/spawn`, `/warp`, kits, economía básica y más |
+| **Vault** | [GitHub Releases](https://github.com/MilkBowl/Vault/releases) | API de permisos y economía — puente entre plugins |
+| **LuckPerms** | [Modrinth](https://modrinth.com/plugin/luckperms) | Sistema avanzado de permisos y rangos con editor web |
+
+### Agregar plugins personalizados
+
+Para agregar plugins que no están en Modrinth ni en GitHub Releases:
+
+1. Descarga el `.jar` del plugin (compatible con **Paper 1.21.4**)
+2. Colócalo en la carpeta `plugins/`
+3. Reinicia el servidor: `docker compose restart minecraft`
+
+> 📖 Más detalles en [`plugins/README.md`](plugins/README.md)
+
+---
+
+## ⚙️ Configuración del servidor
+
+La configuración se maneja a través de variables de entorno en `docker-compose.yml`:
 
 ### General
 
 | Variable | Valor actual | Descripción |
 |----------|-------------|-------------|
-| `TYPE` | `PAPER` | Motor del servidor (VANILLA, PAPER, SPIGOT, FABRIC, FORGE) |
-| `VERSION` | `LATEST` | Versión de Minecraft |
+| `TYPE` | `PAPER` | Motor del servidor (optimizado para plugins) |
+| `VERSION` | `1.21.4` | Versión de Minecraft (fijada para compatibilidad con plugins) |
 | `MEMORY` | `2G` | RAM asignada a la JVM |
 | `TZ` | `America/Mexico_City` | Zona horaria del contenedor |
+
+### Plugins automáticos
+
+| Variable | Valor actual | Descripción |
+|----------|-------------|-------------|
+| `MODRINTH_PROJECTS` | `essentialsx,luckperms` | Slugs de plugins descargados desde Modrinth |
+| `PLUGINS` | `https://github.com/MilkBowl/Vault/releases/download/1.7.3/Vault.jar` | URLs directas de plugins (GitHub Releases, etc.) |
+| `COPY_PLUGINS_DEST` | `/data/plugins` | Destino donde se copian los plugins del directorio `plugins/` |
 
 ### Gameplay
 
@@ -80,7 +122,7 @@ La configuración del servidor se maneja a través de variables de entorno en `d
 | `DIFFICULTY` | `normal` | Dificultad (peaceful, easy, normal, hard) |
 | `MODE` | `survival` | Modo de juego (survival, creative, adventure, spectator) |
 | `MAX_PLAYERS` | `5` | Jugadores máximos simultáneos |
-| `ONLINE_MODE` | `false` | `false` = no requiere cuenta de Mojang |
+| `ONLINE_MODE` | `false` | `false` = no requiere cuenta premium de Mojang |
 | `ALLOW_NETHER` | `true` | Habilitar el Nether |
 | `ALLOW_FLIGHT` | `false` | Permitir volar en survival |
 | `VIEW_DISTANCE` | `10` | Distancia de renderizado (chunks) |
@@ -145,10 +187,21 @@ docker attach minecraft-server
 docker exec minecraft-server rcon-cli <comando>
 
 # Ejemplos:
-docker exec minecraft-server rcon-cli list          # Ver jugadores conectados
-docker exec minecraft-server rcon-cli op <jugador>  # Dar OP a un jugador
+docker exec minecraft-server rcon-cli list                     # Ver jugadores conectados
+docker exec minecraft-server rcon-cli op <jugador>             # Dar OP a un jugador
 docker exec minecraft-server rcon-cli whitelist add <jugador>  # Agregar a whitelist
 docker exec minecraft-server rcon-cli say "¡Hola a todos!"    # Mensaje global
+```
+
+### Comandos de plugins (en la consola del servidor o con rcon-cli)
+
+```bash
+# EssentialsX
+docker exec minecraft-server rcon-cli ess reload              # Recargar configuración
+
+# LuckPerms
+docker exec minecraft-server rcon-cli lp user <jugador> info  # Ver info de un jugador
+docker exec minecraft-server rcon-cli lp editor                # Abrir editor web de permisos
 ```
 
 ### Backups
@@ -167,24 +220,54 @@ docker compose up -d
 
 ---
 
-## 🏗 Arquitectura
+## 🏗 Arquitectura del proyecto
 
 ```
 Server-minecraft/
-├── docker-compose.yml    # Definición del servicio y configuración
-├── README.md             # Este archivo
-└── .gitignore            # Archivos ignorados por git
+├── .github/
+│   └── workflows/
+│       └── ci.yml              # CI: valida compose + health check del server
+├── plugins/
+│   ├── README.md               # Instrucciones para plugins personalizados
+│   └── .gitkeep                # Mantiene el directorio en git
+├── docker-compose.yml          # Definición del servicio y configuración
+├── README.md                   # Este archivo
+└── .gitignore                  # Archivos ignorados por git
 
 Volumen Docker:
-└── minecraft_data        # Datos persistentes (mundo, plugins, configs)
+└── minecraft_data              # Datos persistentes (mundo, plugins, configs)
+```
+
+### Flujo de plugins
+
+```
+                        ┌─────────────────────┐
+                        │  docker compose up   │
+                        └─────────┬───────────┘
+                                  │
+              ┌───────────────────┼───────────────────┐
+              │                   │                     │
+   ┌──────────▼──────────┐ ┌─────▼──────────┐ ┌───────▼────────────┐
+   │ Modrinth (auto)     │ │ URL directa    │ │ plugins/ (manual)  │
+   │                     │ │                │ │                    │
+   │  EssentialsX        │ │  Vault         │ │  custom-plugin.jar │
+   │  LuckPerms          │ │                │ │  otro-plugin.jar   │
+   └──────────┬──────────┘ └─────┬──────────┘ └───────┬────────────┘
+              │                   │                     │
+              └───────────────────┼─────────────────────┘
+                                  │
+                       ┌──────────▼──────────┐
+                       │  /data/plugins/ en  │
+                       │  el contenedor      │
+                       └─────────────────────┘
 ```
 
 ### Persistencia
 
-Los datos del servidor se almacenan en el volumen Docker `minecraft_data`. Esto incluye:
+Los datos del servidor se almacenan en el volumen Docker `minecraft_data`:
 
 - 🌍 **Mundos** (world, world_nether, world_the_end)
-- 🔌 **Plugins** y sus configuraciones
+- 🔌 **Plugins** descargados y sus configuraciones
 - 📄 **Configuración** del servidor (server.properties, etc.)
 - 🚫 **Bans, whitelist, ops**
 
@@ -192,12 +275,21 @@ Los datos persisten aunque el contenedor se elimine. Solo se pierden si se borra
 
 ### Health Check
 
-El contenedor incluye un health check que verifica si el servidor está respondiendo:
+El contenedor incluye un health check automático:
 
 - **Intervalo:** cada 30 segundos
 - **Timeout:** 10 segundos
 - **Inicio:** espera 60 segundos antes de empezar a verificar
 - **Reintentos:** 5 intentos antes de marcar como unhealthy
+
+### CI/CD
+
+El workflow de GitHub Actions (`.github/workflows/ci.yml`) se ejecuta en cada PR y push a `main`:
+
+1. **Validate Docker Compose** — verifica que la sintaxis del compose sea válida
+2. **Server Health Check** — levanta el servidor completo y valida que pase el health check
+
+Si alguno falla, el PR **no se puede mergear**.
 
 ---
 
@@ -209,6 +301,16 @@ El contenedor incluye un health check que verifica si el servidor está respondi
 # Jalar la última imagen y recrear el contenedor
 docker compose pull
 docker compose up -d
+```
+
+### Actualizar plugins
+
+Los plugins de Modrinth y los descargados por URL se actualizan automáticamente al reiniciar el contenedor.
+
+Para plugins manuales en `plugins/`, reemplaza el `.jar` y reinicia:
+
+```bash
+docker compose restart minecraft
 ```
 
 ### Ver el uso de recursos
@@ -248,9 +350,10 @@ docker compose down -v
 4. Abre un **Pull Request** hacia `main` en GitHub.
 
 > **Reglas del repositorio:**
-> - No se permite push directo a `main`
-> - Todo merge requiere un PR aprobado por el owner
-> - Todos los commits deben estar firmados (GPG verified ✅)
+> - ❌ No se permite push directo a `main`
+> - ✅ Todo merge requiere un PR aprobado por el owner
+> - 🔏 Todos los commits deben estar firmados (GPG verified)
+> - 🤖 CI debe pasar (el servidor debe levantar correctamente)
 
 ---
 

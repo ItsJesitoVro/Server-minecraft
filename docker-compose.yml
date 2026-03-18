@@ -12,13 +12,26 @@ services:
       # Tipo de servidor: VANILLA, PAPER, SPIGOT, FABRIC, FORGE
       TYPE: "PAPER"
 
-      # Versión del juego
-      VERSION: "LATEST"
+      # Versión fija del juego (para compatibilidad con plugins)
+      VERSION: "1.21.4"
 
       # Recursos de la JVM
       MEMORY: "2G"
 
-      # Configuración básica del servidor
+      # ─── Plugins automáticos ───────────────────────────────────
+      # Descarga automática de plugins desde Modrinth (por slug)
+      #   - EssentialsX: essentialsx
+      #   - LuckPerms: luckperms
+      MODRINTH_PROJECTS: "essentialsx,luckperms,xaero-map-spigot"
+
+      # Descarga automática de plugins por URL directa (GitHub Releases, etc.)
+      #   - Vault 1.7.3: API de permisos y economía
+      PLUGINS: "https://github.com/MilkBowl/Vault/releases/download/1.7.3/Vault.jar"
+
+      # Copia plugins personalizados desde /plugins (bind mount) a /data/plugins
+      COPY_PLUGINS_DEST: "/data/plugins"
+
+      # ─── Configuración básica del servidor ─────────────────────
       DIFFICULTY: "normal" # peaceful, easy, normal, hard
       MODE: "survival" # survival, creative, adventure, spectator
       MAX_PLAYERS: "5"
@@ -31,7 +44,7 @@ services:
       MAX_WORLD_SIZE: "10000"
       ALLOW_FLIGHT: "false"
 
-      # Tiempo (segundos): -1 = fijo en día, 0 = ciclo normal
+      # Generación del mundo
       LEVEL_TYPE: "DEFAULT" # DEFAULT, FLAT, LARGEBIOMES, AMPLIFIED
       SEED: "" # Semilla del mundo
 
@@ -41,6 +54,8 @@ services:
     volumes:
       # Persistencia: datos del mundo, plugins, configuración
       - minecraft_data:/data
+      # Plugins personalizados (solo lectura) — coloca aquí tus .jar adicionales
+      - ./plugins:/plugins:ro
 
     # Healthcheck para saber si el servidor está listo
     healthcheck:
