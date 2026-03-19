@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ItsJesitoVro/Server-minecraft/actions/workflows/ci.yml/badge.svg)](https://github.com/ItsJesitoVro/Server-minecraft/actions/workflows/ci.yml)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
-[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.11-62B47A?logo=modrinth&logoColor=white)](https://www.minecraft.net/)
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.4-62B47A?logo=modrinth&logoColor=white)](https://www.minecraft.net/)
 [![Paper](https://img.shields.io/badge/Paper-Server-EEE?logo=paperlessngx&logoColor=black)](https://papermc.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -38,7 +38,7 @@ Servidor de Minecraft dockerizado usando [itzg/minecraft-server](https://github.
 
 | Requisito | Detalle |
 |-----------|---------|
-| Minecraft | **Java Edition 1.21.11** |
+| Minecraft | **Java Edition 1.21.4** |
 | Mods/Plugins | **Ninguno** — los plugins son 100% server-side |
 | Cuenta premium | **No requerida** (ONLINE_MODE: false) |
 
@@ -62,7 +62,7 @@ El servidor descargará automáticamente **Paper** y los **plugins** en el prime
 
 ### Conectarse al servidor
 
-Abre Minecraft **1.21.11** (vanilla) y conéctate a:
+Abre Minecraft **1.21.4** (vanilla) y conéctate a:
 
 ```
 <IP-del-host>:25565
@@ -86,7 +86,7 @@ Los plugins se descargan automáticamente al iniciar el servidor.
 
 Para agregar plugins que no están en Modrinth ni en GitHub Releases:
 
-1. Descarga el `.jar` del plugin (compatible con **Paper 1.21.11**)
+1. Descarga el `.jar` del plugin (compatible con **Paper 1.21.4**)
 2. Colócalo en la carpeta `plugins/`
 3. Reinicia el servidor: `docker compose restart minecraft`
 
@@ -103,7 +103,7 @@ La configuración se maneja a través de variables de entorno en `docker-compose
 | Variable | Valor actual | Descripción |
 |----------|-------------|-------------|
 | `TYPE` | `PAPER` | Motor del servidor (optimizado para plugins) |
-| `VERSION` | `1.21.11` | Versión de Minecraft (fijada para compatibilidad con plugins) |
+| `VERSION` | `1.21.4` | Versión de Minecraft (fijada para compatibilidad con plugins) |
 | `MEMORY` | `2G` | RAM asignada a la JVM |
 | `TZ` | `America/Mexico_City` | Zona horaria del contenedor |
 
