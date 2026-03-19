@@ -13,7 +13,7 @@ services:
       TYPE: "PAPER"
 
       # Versión fija del juego (para compatibilidad con plugins)
-      VERSION: "1.21.11"
+      VERSION: "1.21.4"
 
       # Recursos de la JVM
       MEMORY: "2G"
