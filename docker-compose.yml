@@ -12,24 +12,11 @@ services:
       # Tipo de servidor: VANILLA, PAPER, SPIGOT, FABRIC, FORGE
       TYPE: "PAPER"
 
-      # Versión fija del juego (para compatibilidad con plugins)
-      VERSION: "1.21.4"
+      # Versión del juego
+      VERSION: "1.21.11"
 
       # Recursos de la JVM
       MEMORY: "2G"
-
-      # ─── Plugins automáticos ───────────────────────────────────
-      # Descarga automática de plugins desde Modrinth (por slug)
-      #   - EssentialsX: essentialsx
-      #   - LuckPerms: luckperms
-      MODRINTH_PROJECTS: "essentialsx,luckperms,xaero-map-spigot"
-
-      # Descarga automática de plugins por URL directa (GitHub Releases, etc.)
-      #   - Vault 1.7.3: API de permisos y economía
-      PLUGINS: "https://github.com/MilkBowl/Vault/releases/download/1.7.3/Vault.jar"
-
-      # Copia plugins personalizados desde /plugins (bind mount) a /data/plugins
-      COPY_PLUGINS_DEST: "/data/plugins"
 
       # ─── Configuración básica del servidor ─────────────────────
       DIFFICULTY: "normal" # peaceful, easy, normal, hard
@@ -54,8 +41,6 @@ services:
     volumes:
       # Persistencia: datos del mundo, plugins, configuración
       - minecraft_data:/data
-      # Plugins personalizados (solo lectura) — coloca aquí tus .jar adicionales
-      - ./plugins:/plugins:ro
 
     # Healthcheck para saber si el servidor está listo
     healthcheck:
