@@ -34,4 +34,4 @@ Los archivos `.jar` están **excluidos de git** mediante `.gitignore` para evita
 
 ## Compatibilidad
 
-> ⚠️ **Importante:** Todos los plugins que coloques aquí deben ser compatibles con **Paper 1.21.4**. Verifica la compatibilidad antes de añadir cualquier `.jar` para evitar errores al iniciar el servidor.
+> ⚠️ **Importante:** Todos los plugins que coloques aquí deben ser compatibles con **Paper 1.21.11**. Verifica la compatibilidad antes de añadir cualquier `.jar` para evitar errores al iniciar el servidor.
