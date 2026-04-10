@@ -2,3 +2,5 @@ ruleset-protect-main.json
 
 # Archivos .jar de plugins (se descargan, no se versionan)
 plugins/*.jar
+
+.idea/
