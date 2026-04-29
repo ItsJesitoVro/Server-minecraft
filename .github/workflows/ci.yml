@@ -79,3 +79,23 @@ jobs:
       - name: Cleanup
         if: always()
         run: docker compose down -v --timeout 30
+
+  notify-discord:
+    name: Discord Notification
+    runs-on: ubuntu-latest
+    needs: health-check
+    if: github.event_name == 'push' && always()
+
+    steps:
+      - name: Notify Discord
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ needs.health-check.result }}
+          title: "Tilin Server — Deploy a main"
+          description: |
+            **Commit:** ${{ github.event.head_commit.message }}
+            **Autor:** ${{ github.event.head_commit.author.name }}
+          color: ${{ needs.health-check.result == 'success' && '0x57F287' || '0xED4245' }}
+          url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          username: "Tilin Server"
