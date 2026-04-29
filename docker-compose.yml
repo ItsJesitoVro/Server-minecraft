@@ -13,7 +13,7 @@ services:
       TYPE: "PAPER"
 
       # Versión del juego
-      VERSION: "1.21.11"
+      VERSION: "26.1.2"
 
       # Recursos de la JVM
       MEMORY: "5G"
@@ -29,8 +29,8 @@ services:
       ALLOW_NETHER: "true"
       ENABLE_COMMAND_BLOCK: "false"
       SPAWN_PROTECTION: "16"
-      VIEW_DISTANCE: "8"
-      SIMULATION_DISTANCE: "6"
+      VIEW_DISTANCE: "10"
+      SIMULATION_DISTANCE: "8"
       MAX_WORLD_SIZE: "10000"
       ALLOW_FLIGHT: "false"
 
